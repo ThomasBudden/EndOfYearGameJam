@@ -1,0 +1,345 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+
+public class Player : MonoBehaviour
+{
+    [SerializeField] private GameObject turnCounter;
+    [SerializeField] private GameObject enemy;
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject attacks;
+
+    public float playerCurrentHealth;
+    [SerializeField] private float playerMaxHealth;
+
+    [SerializeField] private Image playerHealthBar;
+    public GameObject playerPoisonedText;
+    public GameObject playerParalysisText;
+
+    public bool playerDefended;
+    private int specialRoll;
+    private int dodgeRoll;
+    private bool dodge;
+    private int backfireRoll;
+    private bool backfire;
+    private int paralysisRoll;
+    public bool playerParalysis;
+    public int playerParalysisTurnCounter;
+    private int poisonRoll;
+    public bool playerPoison;
+    public int playerPoisonTurnCounter;
+
+    public bool attacked;
+
+    void Start()
+    {
+        playerCurrentHealth = playerMaxHealth;
+        player = this.gameObject;
+        
+        enemy = GameObject.Find("Enemy");
+        turnCounter = GameObject.Find("TurnBasedBattle");
+        attacks = GameObject.Find("MoveButtons");
+    }
+
+    void Update()
+    {
+        playerHealthBar.fillAmount = playerCurrentHealth / playerMaxHealth;
+
+        if (turnCounter.gameObject.GetComponent<TurnCounter>().pTurn == true)
+        {
+            attacks.SetActive(true);
+
+            if (playerPoison == true)
+            {
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player is poisoned. they takes 10 damage";
+                playerCurrentHealth -= 10;
+                playerPoisonTurnCounter--;
+                if (playerPoisonTurnCounter == 0)
+                {
+                    Invoke("EndPoison", 2);
+                }
+            }
+
+            if (playerParalysis == true)
+            {
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player is paralysed. they cant attack";
+                playerParalysisTurnCounter--;
+                if (playerParalysisTurnCounter == 0)
+                {
+                    Invoke("EndParalysis", 1);
+                    EndTurn();
+                }
+            }
+            else
+            {
+                if(attacked == true)
+                {
+                    EndTurn();
+                }
+            }
+
+        }
+    }
+
+    public void Attack()
+    {
+        dodgeRoll = Random.Range(0, 5);
+
+        if (dodgeRoll == 3)
+        {
+            dodge = true;
+        }
+        else
+        {
+            dodge = false;
+        }
+
+        backfireRoll = Random.Range(0, 8);
+
+        if (backfireRoll == 3)
+        {
+            backfire = true;
+        }
+        else
+        {
+            backfire = false;
+        }
+
+        if (dodge == false)
+        {
+            if (backfire == false)
+            {
+                if (enemy.GetComponent<Enemy>().enemyDefended == false)
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player does 30 damage";
+                    enemy.GetComponent<Enemy>().enemyCurrentHealth -= 30;
+                }
+                else if (enemy.GetComponent<Enemy>().enemyDefended == true)
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy defended! player does 15 damage";
+                    enemy.GetComponent<Enemy>().enemyCurrentHealth -= 15;
+                }
+            }
+            else
+            {
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Player takes 30 damage";
+                playerCurrentHealth -= 20;
+            }
+        }
+        else
+        {
+            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
+        }
+
+        enemy.GetComponent<Enemy>().enemyDefended = false;
+
+        EndTurn();
+    }
+
+    public void Defend()
+    {
+        turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player braced themself";
+        playerDefended = true;
+        enemy.GetComponent<Enemy>().enemyDefended = false;
+
+        EndTurn();
+    }
+
+    public void Special()
+    {
+        dodgeRoll = Random.Range(0, 5);
+
+        if (dodgeRoll == 3)
+        {
+            dodge = true;
+        }
+        else
+        {
+            dodge = false;
+        }
+
+        backfireRoll = Random.Range(0, 7);
+
+        if (backfireRoll == 3)
+        {
+            backfire = true;
+        }
+        else
+        {
+            backfire = false;
+        }
+
+        specialRoll = Random.Range(0, 3);
+
+        if (dodge == false)
+        {
+            if (backfire == false)
+            {
+                if (specialRoll == 0 && dodge == false)
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player used special attack. enemy took 45 damage";
+                    enemy.GetComponent<Enemy>().enemyCurrentHealth -= 45;
+                }
+                else if (specialRoll == 1 || specialRoll == 2 && dodge == false)
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player used special attack. it missed";
+                }
+            }
+            else
+            {
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Player takes 45 damage";
+                playerCurrentHealth -= 45;
+            }
+        }
+        else
+        {
+            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
+        }
+
+        enemy.GetComponent<Enemy>().enemyDefended = false;
+
+        EndTurn();
+    }
+
+    public void Poison()
+    {
+        poisonRoll = Random.Range(0, 5);
+        dodgeRoll = Random.Range(0, 5);
+
+        if (dodgeRoll == 3)
+        {
+            dodge = true;
+        }
+        else
+        {
+            dodge = false;
+        }
+
+        if (dodge == false)
+        {
+
+            if (enemy.GetComponent<Enemy>().enemyPoison == true)
+            {
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy is already poisoned";
+            }
+            else
+            {
+                if (poisonRoll == 2 && enemy.GetComponent<Enemy>().enemyPoison == false)
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "it worked. enemy is poisoned for 5 turns";
+                    enemy.GetComponent<Enemy>().enemyPoisonTurnCounter = 5;
+                    enemy.GetComponent<Enemy>().enemyPoison = true;
+                    enemy.GetComponent<Enemy>().enemyPoisonedText.SetActive(true);
+                }
+                else if (poisonRoll == 2 && enemy.GetComponent<Enemy>().enemyPoison == true)
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy defended. player is poisoned for 3 turns";
+                    enemy.GetComponent<Enemy>().enemyPoisonTurnCounter = 3;
+                    enemy.GetComponent<Enemy>().enemyPoison = true;
+                    enemy.GetComponent<Enemy>().enemyPoisonedText.SetActive(true);
+                }
+                else
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It failed!";
+                }
+            }
+        }
+        else
+        {
+            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
+        }
+
+        enemy.GetComponent<Enemy>().enemyDefended = false;
+
+        EndTurn();
+    }
+
+    public void Paralysis()
+    {
+        dodgeRoll = Random.Range(0, 5);
+        paralysisRoll = Random.Range(0, 4);
+
+        if (dodgeRoll == 3)
+        {
+            dodge = true;
+        }
+        else
+        {
+            dodge = false;
+        }
+
+        if (dodge == false)
+        {
+            if (enemy.GetComponent<Enemy>().enemyParalysis == true)
+            {
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy is already paralysed";
+            }
+            else
+            {
+                if (paralysisRoll == 2 && enemy.GetComponent<Enemy>().enemyDefended == false)
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "it worked. enemy is paralysed for 3 turns";
+                    enemy.GetComponent<Enemy>().enemyParalysisTurnCounter = 3;
+                    enemy.GetComponent<Enemy>().enemyParalysis = true;
+                    enemy.GetComponent<Enemy>().enemyParalysedText.SetActive(true);
+                }
+                else if (paralysisRoll == 2 && enemy.GetComponent<Enemy>().enemyDefended == true)
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy defended. enemy is paralysed for 1 turns";
+                    enemy.GetComponent<Enemy>().enemyParalysisTurnCounter = 1;
+                    enemy.GetComponent<Enemy>().enemyParalysis = true;
+                    enemy.GetComponent<Enemy>().enemyParalysedText.SetActive(true);
+                }
+                else
+                {
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It failed!";
+                }
+            }
+        }
+        else
+        {
+            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
+        }
+
+        enemy.GetComponent<Enemy>().enemyDefended = false;
+
+        EndTurn();
+    }
+
+    public void Foretell()
+    {
+        enemy.GetComponent<Enemy>().enemyDefended = false;
+
+        EndTurn();
+    }
+
+     public void hasAttacked()
+    {
+        attacked = true;
+    }
+
+    void EndPoison()
+    {
+        turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player is no longer poisoned";
+        playerPoison = false;
+        playerPoisonedText.SetActive(false);
+        enemy.GetComponent<Enemy>().enemyDefended = false;
+    }
+
+    void EndParalysis()
+    {
+        turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player is no longer paralysed";
+        playerParalysis = false;
+        playerParalysisText.SetActive(false);
+        enemy.GetComponent<Enemy>().enemyDefended = false;
+    }
+
+    public void EndTurn()
+    {
+        turnCounter.gameObject.GetComponent<TurnCounter>().pTurn = false;
+        turnCounter.gameObject.GetComponent<TurnCounter>().eTurn = true;
+        attacks.SetActive(false);
+    }
+}
