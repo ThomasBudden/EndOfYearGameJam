@@ -6,15 +6,16 @@ using UnityEngine.UI;
 
 public class CardInfo : MonoBehaviour
 {
+    [SerializeField] private GameObject infoPanel;
     [SerializeField] private string infoText;
-    [SerializeField] private Image thisCardImage;
-
+    [SerializeField] private GameObject thisCardImage;
     [SerializeField] private TMP_Text infotxt;
-    [SerializeField] private Image cardImage;
 
-    void OnClick()
+
+    public void OnClick()
     {
+        infoPanel.SetActive(true);
         infotxt.text = infoText;
-        cardImage = thisCardImage;
+        thisCardImage.SetActive(true);
     }
 }

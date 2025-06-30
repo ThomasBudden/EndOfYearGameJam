@@ -318,6 +318,8 @@ public class Player : MonoBehaviour
 
     public void Foretell()
     {
+        playerTurnCounter.GetComponent<TurnCounter>().battleText.text = enemy.GetComponent<Enemy>().enemyInfo;
+
         enemy.GetComponent<Enemy>().enemyDefended = false;
 
         EndTurn();

@@ -31,6 +31,20 @@ public class Enemy : MonoBehaviour
     public GameObject enemyPoisonedText;
     public GameObject enemyParalysedText;
 
+    [SerializeField] private int damage;
+    [SerializeField] private int specialDamage;
+    [SerializeField] private int specialChance;
+    [SerializeField] private int dodgeMax;
+    [SerializeField] private int backfireMax;
+    [SerializeField] private int paralysisMax;
+    [SerializeField] private int poisonMax;
+    [SerializeField] private bool canPoison;
+    [SerializeField] private bool canParalysis;
+    [SerializeField] private int poisonWeakness;
+    [SerializeField] private int paralysisWeakness;
+
+    public string enemyInfo;
+
     void Start()
     {
         enemyCurrentHealth = enemyMaxHealth;
@@ -90,16 +104,28 @@ public class Enemy : MonoBehaviour
                 Invoke("Special", 2);
                 Invoke("EndOfTurn", 3);
             }
-            else if (moveRoll == 8 || moveRoll == 9)
+            else if (moveRoll == 8 && canParalysis || moveRoll == 9 && canParalysis)
             {
                 turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy Chose Paralysis";
                 Invoke("Paralysis", 2);
                 Invoke("EndOfTurn", 3);
             }
-            else if (moveRoll == 10)
+            else if(moveRoll == 8 && !canParalysis || moveRoll == 9 && !canParalysis)
+            {
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy Chose Defend";
+                Invoke("Defend", 2);
+                Invoke("EndOfTurn", 3);
+            }
+            else if (moveRoll == 10 && canPoison)
             {
                 turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy Chose poison";
                 Invoke("Poison", 2);
+                Invoke("EndOfTurn", 3);
+            }
+            else if(moveRoll == 10 && !canPoison)
+            {
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy Chose Attack";
+                Invoke("Attack", 2);
                 Invoke("EndOfTurn", 3);
             }
             else if (moveRoll == 6)
@@ -123,9 +149,9 @@ public class Enemy : MonoBehaviour
 
     void Attack()
     {
-        dodgeRoll = Random.Range(0, 4);
+        dodgeRoll = Random.Range(0, dodgeMax);
 
-        if (dodgeRoll == 3)
+        if (dodgeRoll == 1)
         {
             dodge = true;
         }
@@ -134,9 +160,9 @@ public class Enemy : MonoBehaviour
             dodge = false;
         }
 
-        backfireRoll = Random.Range(0, 6);
+        backfireRoll = Random.Range(0, backfireMax);
 
-        if (backfireRoll == 3)
+        if (backfireRoll == 1)
         {
             backfire = true;
         }
@@ -151,19 +177,19 @@ public class Enemy : MonoBehaviour
             {
                 if (player.GetComponent<Player>().playerDefended == false && dodge == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy does 20 damage";
-                    player.gameObject.GetComponent<Player>().playerCurrentHealth -= 20;
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy does damage";
+                    player.gameObject.GetComponent<Player>().playerCurrentHealth -= damage;
                 }
                 else if (player.GetComponent<Player>().playerDefended == true && dodge == false)
                 {
                     turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player defended! Enemy does 10 damage";
-                    player.gameObject.GetComponent<Player>().playerCurrentHealth -= 10;
+                    player.gameObject.GetComponent<Player>().playerCurrentHealth -= damage / 2;
                 }
             }
             else
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Enemy takes 20 damage";
-                enemyCurrentHealth -= 20;
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Enemy takes damage";
+                enemyCurrentHealth -= damage;
             }
         }
         else
@@ -175,9 +201,9 @@ public class Enemy : MonoBehaviour
 
     void Special()
     {
-        dodgeRoll = Random.Range(0, 5);
+        dodgeRoll = Random.Range(0, dodgeMax);
 
-        if (dodgeRoll == 3)
+        if (dodgeRoll == 1)
         {
             dodge = true;
         }
@@ -186,9 +212,9 @@ public class Enemy : MonoBehaviour
             dodge = false;
         }
 
-        backfireRoll = Random.Range(0, 4);
+        backfireRoll = Random.Range(0, backfireMax);
 
-        if (backfireRoll == 3)
+        if (backfireRoll == 1)
         {
             backfire = true;
         }
@@ -197,7 +223,7 @@ public class Enemy : MonoBehaviour
             backfire = false;
         }
 
-        specialRoll = Random.Range(0, 3);
+        specialRoll = Random.Range(0, specialChance);
 
         if (dodge == false)
         {
@@ -205,18 +231,18 @@ public class Enemy : MonoBehaviour
             {
                 if (specialRoll == 0 && dodge == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy used special attack. Player took 35 damage";
-                    player.gameObject.GetComponent<Player>().playerCurrentHealth -= 35;
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy used special attack. Player took damage";
+                    player.gameObject.GetComponent<Player>().playerCurrentHealth -= specialDamage;
                 }
-                else if (specialRoll == 1 || specialRoll == 2 && dodge == false)
+                else if (specialRoll != 0 && dodge == false)
                 {
                     turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy used special attack. it missed";
                 }
             }
             else
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Enemy takes 35 damage";
-                enemyCurrentHealth -= 35;
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Enemy takes damage";
+                enemyCurrentHealth -= specialDamage;
             }
         }
         else
@@ -228,10 +254,10 @@ public class Enemy : MonoBehaviour
 
     void Paralysis()
     {
-        paralysisRoll = Random.Range(0, 5);
-        dodgeRoll = Random.Range(0, 5);
+        paralysisRoll = Random.Range(0, paralysisMax);
+        dodgeRoll = Random.Range(0, dodgeMax);
 
-        if (dodgeRoll == 3)
+        if (dodgeRoll == 1)
         {
             dodge = true;
         }
@@ -244,21 +270,21 @@ public class Enemy : MonoBehaviour
         {
             if (player.GetComponent<Player>().playerParalysis == true)
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player is already paralysed";
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player is already paralysed";
             }
             else
             {
                 if (paralysisRoll == 2 && player.GetComponent<Player>().playerDefended == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "it worked. player is paralysed for 3 turns";
-                    player.GetComponent<Player>().playerParalysisTurnCounter = 3;
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It worked. Player is paralysed";
+                    player.GetComponent<Player>().playerParalysisTurnCounter = paralysisWeakness;
                     player.GetComponent<Player>().playerParalysis = true;
                     player.GetComponent<Player>().playerParalysisText.SetActive(true);
                 }
                 else if (paralysisRoll == 2 && player.GetComponent<Player>().playerDefended == true)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player defended. player is paralysed for 2 turns";
-                    player.GetComponent<Player>().playerParalysisTurnCounter = 2;
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player defended. Player is paralysed less effectively";
+                    player.GetComponent<Player>().playerParalysisTurnCounter = paralysisWeakness - 2;
                     player.GetComponent<Player>().playerParalysis = true;
                     player.GetComponent<Player>().playerParalysisText.SetActive(true);
                 }
@@ -276,10 +302,10 @@ public class Enemy : MonoBehaviour
 
     void Poison()
     {
-        poisonRoll = Random.Range(0, 5);
-        dodgeRoll = Random.Range(0, 5);
+        poisonRoll = Random.Range(0, poisonMax);
+        dodgeRoll = Random.Range(0, dodgeMax);
 
-        if (dodgeRoll == 3)
+        if (dodgeRoll == 0)
         {
             dodge = true;
         }
@@ -292,21 +318,21 @@ public class Enemy : MonoBehaviour
         {
             if (player.GetComponent<Player>().playerPoison == true)
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player is already poisoned";
+                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player is already poisoned";
             }
             else
             {
                 if (poisonRoll == 2 && player.GetComponent<Player>().playerDefended == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "it worked. player is poisoned for 5 turns";
-                    player.GetComponent<Player>().playerPoisonTurnCounter = 5;
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It worked. Player is poisoned";
+                    player.GetComponent<Player>().playerPoisonTurnCounter = poisonWeakness;
                     player.GetComponent<Player>().playerPoison = true;
                     player.GetComponent<Player>().playerPoisonedText.SetActive(true);
                 }
                 else if (poisonRoll == 2 && player.GetComponent<Player>().playerDefended == true)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player defended. player is poisoned for 3 turns";
-                    player.GetComponent<Player>().playerPoisonTurnCounter = 3;
+                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player defended. Player is poisoned less effectively";
+                    player.GetComponent<Player>().playerPoisonTurnCounter = poisonWeakness - 2;
                     player.GetComponent<Player>().playerPoison = true;
                     player.GetComponent<Player>().playerPoisonedText.SetActive(true);
                 }
@@ -327,7 +353,7 @@ public class Enemy : MonoBehaviour
     {
         if (enemyPoison == true)
         {
-            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy is poisoned. it takes 10 damage";
+            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy is poisoned. It takes 10 damage";
             enemyCurrentHealth -= 10;
             enemyPoisonTurnCounter--;
             if (enemyPoisonTurnCounter == 0)

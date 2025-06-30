@@ -63,6 +63,18 @@ MonoBehaviour:
   enemyHealthBar: {fileID: 0}
   enemyPoisonedText: {fileID: 3009105983044734442}
   enemyParalysedText: {fileID: 8018899954350618983}
+  damage: 15
+  specialDamage: 35
+  specialChance: 4
+  dodgeMax: 5
+  backfireMax: 4
+  paralysisMax: 3
+  poisonMax: 3
+  canPoison: 1
+  canParalysis: 1
+  poisonWeakness: 5
+  paralysisWeakness: 3
+  enemyInfo: An enemy of the cult. Destroy them.
 --- !u!1 &3009105983044734442
 GameObject:
   m_ObjectHideFlags: 0
