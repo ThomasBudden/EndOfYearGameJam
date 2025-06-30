@@ -6,15 +6,15 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private GameObject turnCounter;
-    [SerializeField] private GameObject enemy;
+    public GameObject playerTurnCounter;
+    public GameObject enemy;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject attacks;
 
     public float playerCurrentHealth;
     [SerializeField] private float playerMaxHealth;
 
-    [SerializeField] private Image playerHealthBar;
+    public Image playerHealthBar;
     public GameObject playerPoisonedText;
     public GameObject playerParalysisText;
 
@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     public int playerParalysisTurnCounter;
     private int poisonRoll;
     public bool playerPoison;
+    public bool takePoisonDamage;
     public int playerPoisonTurnCounter;
 
     public bool attacked;
@@ -38,39 +39,46 @@ public class Player : MonoBehaviour
         playerCurrentHealth = playerMaxHealth;
         player = this.gameObject;
         
-        enemy = GameObject.Find("Enemy");
-        turnCounter = GameObject.Find("TurnBasedBattle");
+        enemy = GameObject.Find("Enemy(Clone)");
+        playerTurnCounter = GameObject.Find("TurnBasedBattle");
         attacks = GameObject.Find("MoveButtons");
+        attacks.GetComponentInChildren<AttackButtons>().player = this.gameObject;
+        attacks.GetComponentInChildren<AttackButtons>().assigned = false;
     }
 
     void Update()
     {
         playerHealthBar.fillAmount = playerCurrentHealth / playerMaxHealth;
 
-        if (turnCounter.gameObject.GetComponent<TurnCounter>().pTurn == true)
+        if (playerTurnCounter.gameObject.GetComponent<TurnCounter>().pTurn == true)
         {
             attacks.SetActive(true);
 
-            if (playerPoison == true)
+            if (playerPoison == true && takePoisonDamage == true)
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player is poisoned. they takes 10 damage";
+                takePoisonDamage = false;
+                playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player is poisoned. they takes 10 damage";
                 playerCurrentHealth -= 10;
                 playerPoisonTurnCounter--;
                 if (playerPoisonTurnCounter == 0)
                 {
+                    playerPoisonedText.SetActive(false);
                     Invoke("EndPoison", 2);
                 }
             }
 
             if (playerParalysis == true)
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player is paralysed. they cant attack";
+                playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player is paralysed. they cant attack";
                 playerParalysisTurnCounter--;
                 if (playerParalysisTurnCounter == 0)
                 {
                     Invoke("EndParalysis", 1);
+                    playerParalysisText.SetActive(false);
+                    hasAttacked();
                     EndTurn();
                 }
+                EndTurn();
             }
             else
             {
@@ -113,24 +121,24 @@ public class Player : MonoBehaviour
             {
                 if (enemy.GetComponent<Enemy>().enemyDefended == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player does 30 damage";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player does 30 damage";
                     enemy.GetComponent<Enemy>().enemyCurrentHealth -= 30;
                 }
                 else if (enemy.GetComponent<Enemy>().enemyDefended == true)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy defended! player does 15 damage";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy defended! player does 15 damage";
                     enemy.GetComponent<Enemy>().enemyCurrentHealth -= 15;
                 }
             }
             else
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Player takes 30 damage";
+                playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Player takes 30 damage";
                 playerCurrentHealth -= 20;
             }
         }
         else
         {
-            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
+            playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
         }
 
         enemy.GetComponent<Enemy>().enemyDefended = false;
@@ -140,7 +148,7 @@ public class Player : MonoBehaviour
 
     public void Defend()
     {
-        turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player braced themself";
+        playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player braced themself";
         playerDefended = true;
         enemy.GetComponent<Enemy>().enemyDefended = false;
 
@@ -179,23 +187,23 @@ public class Player : MonoBehaviour
             {
                 if (specialRoll == 0 && dodge == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player used special attack. enemy took 45 damage";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player used special attack. enemy took 45 damage";
                     enemy.GetComponent<Enemy>().enemyCurrentHealth -= 45;
                 }
                 else if (specialRoll == 1 || specialRoll == 2 && dodge == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player used special attack. it missed";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "player used special attack. it missed";
                 }
             }
             else
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Player takes 45 damage";
+                playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It backfired! Player takes 45 damage";
                 playerCurrentHealth -= 45;
             }
         }
         else
         {
-            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
+            playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
         }
 
         enemy.GetComponent<Enemy>().enemyDefended = false;
@@ -222,33 +230,33 @@ public class Player : MonoBehaviour
 
             if (enemy.GetComponent<Enemy>().enemyPoison == true)
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy is already poisoned";
+                playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy is already poisoned";
             }
             else
             {
                 if (poisonRoll == 2 && enemy.GetComponent<Enemy>().enemyPoison == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "it worked. enemy is poisoned for 5 turns";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "it worked. enemy is poisoned for 5 turns";
                     enemy.GetComponent<Enemy>().enemyPoisonTurnCounter = 5;
                     enemy.GetComponent<Enemy>().enemyPoison = true;
                     enemy.GetComponent<Enemy>().enemyPoisonedText.SetActive(true);
                 }
                 else if (poisonRoll == 2 && enemy.GetComponent<Enemy>().enemyPoison == true)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy defended. player is poisoned for 3 turns";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy defended. player is poisoned for 3 turns";
                     enemy.GetComponent<Enemy>().enemyPoisonTurnCounter = 3;
                     enemy.GetComponent<Enemy>().enemyPoison = true;
                     enemy.GetComponent<Enemy>().enemyPoisonedText.SetActive(true);
                 }
                 else
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It failed!";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It failed!";
                 }
             }
         }
         else
         {
-            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
+            playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
         }
 
         enemy.GetComponent<Enemy>().enemyDefended = false;
@@ -274,33 +282,33 @@ public class Player : MonoBehaviour
         {
             if (enemy.GetComponent<Enemy>().enemyParalysis == true)
             {
-                turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy is already paralysed";
+                playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy is already paralysed";
             }
             else
             {
                 if (paralysisRoll == 2 && enemy.GetComponent<Enemy>().enemyDefended == false)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "it worked. enemy is paralysed for 3 turns";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "it worked. enemy is paralysed for 3 turns";
                     enemy.GetComponent<Enemy>().enemyParalysisTurnCounter = 3;
                     enemy.GetComponent<Enemy>().enemyParalysis = true;
                     enemy.GetComponent<Enemy>().enemyParalysedText.SetActive(true);
                 }
                 else if (paralysisRoll == 2 && enemy.GetComponent<Enemy>().enemyDefended == true)
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy defended. enemy is paralysed for 1 turns";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "enemy defended. enemy is paralysed for 1 turns";
                     enemy.GetComponent<Enemy>().enemyParalysisTurnCounter = 1;
                     enemy.GetComponent<Enemy>().enemyParalysis = true;
                     enemy.GetComponent<Enemy>().enemyParalysedText.SetActive(true);
                 }
                 else
                 {
-                    turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It failed!";
+                    playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "It failed!";
                 }
             }
         }
         else
         {
-            turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
+            playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy dodged!";
         }
 
         enemy.GetComponent<Enemy>().enemyDefended = false;
@@ -322,7 +330,7 @@ public class Player : MonoBehaviour
 
     void EndPoison()
     {
-        turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player is no longer poisoned";
+        playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player is no longer poisoned";
         playerPoison = false;
         playerPoisonedText.SetActive(false);
         enemy.GetComponent<Enemy>().enemyDefended = false;
@@ -330,7 +338,7 @@ public class Player : MonoBehaviour
 
     void EndParalysis()
     {
-        turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player is no longer paralysed";
+        playerTurnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Player is no longer paralysed";
         playerParalysis = false;
         playerParalysisText.SetActive(false);
         enemy.GetComponent<Enemy>().enemyDefended = false;
@@ -338,8 +346,8 @@ public class Player : MonoBehaviour
 
     public void EndTurn()
     {
-        turnCounter.gameObject.GetComponent<TurnCounter>().pTurn = false;
-        turnCounter.gameObject.GetComponent<TurnCounter>().eTurn = true;
+        playerTurnCounter.gameObject.GetComponent<TurnCounter>().pTurn = false;
+        playerTurnCounter.gameObject.GetComponent<TurnCounter>().eTurn = true;
         attacks.SetActive(false);
     }
 }
