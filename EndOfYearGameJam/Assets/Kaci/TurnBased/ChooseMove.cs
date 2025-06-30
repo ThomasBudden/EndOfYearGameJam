@@ -7,11 +7,18 @@ public class ChooseMove : MonoBehaviour
     private Vector2 startTouchPos;
     private Vector2 endTouchPos;
     private float direction;
+    [SerializeField] private GameObject moveSelect;
     [SerializeField] private List<GameObject> attacks = new List<GameObject>();
     [SerializeField] private int attackShown;
 
     void Start()
     {
+        attacks[attackShown].SetActive(true);
+    }
+
+    public void BattleStart()
+    {
+        moveSelect.SetActive(true);
         attacks[attackShown].SetActive(true);
     }
 

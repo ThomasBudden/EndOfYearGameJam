@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private GameObject turnCounter;
-    [SerializeField] private GameObject player;
+    public GameObject turnCounter;
+    public GameObject player;
 
     public float enemyCurrentHealth;
     [SerializeField] private float enemyMaxHealth;
@@ -27,16 +27,15 @@ public class Enemy : MonoBehaviour
     public bool enemyPoison;
     public int enemyPoisonTurnCounter;
 
-    [SerializeField] private Image enemyHealthBar;
+    public Image enemyHealthBar;
     public GameObject enemyPoisonedText;
     public GameObject enemyParalysedText;
 
     void Start()
     {
         enemyCurrentHealth = enemyMaxHealth;
-        
-        turnCounter = GameObject.Find("TurnBasedBattle"); 
-        player = GameObject.Find("Player");
+        player = GameObject.Find("Player(Clone)");
+        turnCounter = GameObject.Find("TurnBasedBattle");
     }
 
     void Update()
@@ -61,6 +60,7 @@ public class Enemy : MonoBehaviour
             if (enemyParalysisTurnCounter == 0)
             {
                 Invoke("EndParalysis", 1);
+                enemyParalysedText.SetActive(false);
                 turnCounter.gameObject.GetComponent<TurnCounter>().eTurn = false;
                 Invoke("EndOfTurn", 3);
             }
@@ -105,12 +105,12 @@ public class Enemy : MonoBehaviour
             else if (moveRoll == 6)
             {
                 turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy Missed";
-                Invoke("EndOfTurn", 2);
+                Invoke("EndOfTurn", 3);
             }
             else
             {
                 turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy Failed To Choose";
-                Invoke("EndOfTurn", 2);
+                Invoke("EndOfTurn", 3);
             }
         }
     }
@@ -332,6 +332,7 @@ public class Enemy : MonoBehaviour
             enemyPoisonTurnCounter--;
             if (enemyPoisonTurnCounter == 0)
             {
+                enemyPoisonedText.SetActive (false);
                 Invoke("EndPoison", 3);
             }
         }
@@ -342,6 +343,7 @@ public class Enemy : MonoBehaviour
         turnCounter.gameObject.GetComponent<TurnCounter>().pTurn = true;
         player.GetComponent<Player>().playerDefended = false;
         player.GetComponent<Player>().attacked = false;
+        player.GetComponent<Player>().takePoisonDamage = true;
     }
 
     void EndParalysis()
