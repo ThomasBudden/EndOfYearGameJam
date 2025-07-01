@@ -16,9 +16,13 @@ public class ClickerScript : MonoBehaviour
 
     public float influenceCount;
     public float infamyCount;
+    public float cultistsCount;
+    public TMP_Text cultistsCountTxt;
     public TMP_Text countTxt;
     public TMP_Text infamyCountTxt;
     public TMP_Text onClickTxt;
+
+    private float timer;
 
     public float upgrade1Count;
     public float upgrade1Cost;
@@ -48,6 +52,43 @@ public class ClickerScript : MonoBehaviour
     public float upgrade3Infamy;
     public float upgrade3Time;
     public TMP_Text upgrade3Txt;
+
+    [Header("Upgrade4: indoctronation")]
+    public float upgrade4E; //Upgrade2 = indoctronation
+    public float upgrade4F; //Mind con influence
+    public float upgrade4I; //Mind con infamy
+    public float upgrade4L; //Mind con loyalty
+    public float upgrade4C; //Mind con cultists
+    public float upgrade4A;
+    public float upgrade4Cost;
+    public float upgrade4Infamy;
+    public float upgrade4Time;
+    public TMP_Text upgrade4Txt;
+
+    [Header("Upgrade5: leaflets")]
+    public float upgrade5E; //Upgrade2 = leaflets
+    public float upgrade5F; //Mind con influence
+    public float upgrade5I; //Mind con infamy
+    public float upgrade5L; //Mind con loyalty
+    public float upgrade5C; //Mind con cultists
+    public float upgrade5A;
+    public float upgrade5Cost;
+    public float upgrade5Infamy;
+    public float upgrade5Time;
+    public TMP_Text upgrade5Txt;
+
+    [Header("Upgrade6: kidnapping")]
+    public float upgrade6E; //Upgrade2 = kidnapping
+    public float upgrade6F; //Mind con influence
+    public float upgrade6I; //Mind con infamy
+    public float upgrade6L; //Mind con loyalty
+    public float upgrade6C; //Mind con cultists
+    public float upgrade6A;
+    public float upgrade6Cost;
+    public float upgrade6Infamy;
+    public float upgrade6Time;
+    public TMP_Text upgrade6Txt;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,11 +98,15 @@ public class ClickerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        timer += Time.deltaTime;
+
         if (upgrade2Time + 10 < Time.time && upgrade2E > 0) //mind control
         {
             upgrade2Time = Time.time;
             upgrade2F += (upgrade2L * (upgrade2E + (upgrade2C / 2 * ((2 * upgrade2E) + (upgrade2C - 1)))));
             infamyCount += upgrade2I;
+            influenceCount += 5;
+            countTxt.text = influenceCount.ToString();
             upgrade2Infamy += upgrade2I;
             upgrade2Txt.text = ("Cost: " + upgrade2Cost + ", Upgrades: " + upgrade2E + ", Influence: " + upgrade2F + ", Infamy: " + upgrade2Infamy).ToString();
         }
@@ -71,9 +116,51 @@ public class ClickerScript : MonoBehaviour
             upgrade3Time = Time.time;
             upgrade3F += (upgrade3L * (upgrade3E + (upgrade3C / 2 * ((2 * upgrade3E) + (upgrade3C - 1)))));
             infamyCount += upgrade3I;
+            influenceCount += 7;
+            countTxt.text = influenceCount.ToString();
             upgrade3Infamy += upgrade3I;
             upgrade3Txt.text = ("Cost: " + upgrade3Cost + ", Upgrades: " + upgrade3E + ", Influence: " + upgrade3F + ", Infamy: " + upgrade3Infamy).ToString();
         }
+
+        if (upgrade4Time + 10 < Time.time && upgrade4E > 0) //indoctronation
+        {
+            upgrade4Time = Time.time;
+            upgrade4F += (upgrade4L * (upgrade4E + (upgrade4C / 2 * ((2 * upgrade4E) + (upgrade4C - 1)))));
+            infamyCount += upgrade4I;
+            influenceCount += 10;
+            countTxt.text = influenceCount.ToString();
+            upgrade4Infamy += upgrade4I;
+            upgrade4Txt.text = ("Cost: " + upgrade4Cost + ", Upgrades: " + upgrade4E + ", Influence: " + upgrade4F + ", Infamy: " + upgrade4Infamy).ToString();
+        }
+
+        if (upgrade5Time + 10 < Time.time && upgrade5E > 0) //leaflets
+        {
+            upgrade5Time = Time.time;
+            upgrade5F += (upgrade5L * (upgrade5E + (upgrade5C / 2 * ((2 * upgrade5E) + (upgrade5C - 1)))));
+            infamyCount += upgrade5I;
+            influenceCount += 12;
+            countTxt.text = influenceCount.ToString();
+            upgrade5Infamy += upgrade5I;
+            upgrade5Txt.text = ("Cost: " + upgrade5Cost + ", Upgrades: " + upgrade5E + ", Influence: " + upgrade5F + ", Infamy: " + upgrade5Infamy).ToString();
+        }
+
+        if (upgrade6Time + 10 < Time.time && upgrade6E > 0) //kidnapping
+        {
+            upgrade6Time = Time.time;
+            upgrade6F += (upgrade6L * (upgrade6E + (upgrade6C / 2 * ((2 * upgrade6E) + (upgrade6C - 1)))));
+            infamyCount += upgrade6I;
+            influenceCount += 15;
+            countTxt.text = influenceCount.ToString();
+            upgrade6Infamy += upgrade6I;
+            upgrade6Txt.text = ("Cost: " + upgrade6Cost + ", Upgrades: " + upgrade6E + ", Influence: " + upgrade6F + ", Infamy: " + upgrade6Infamy).ToString();
+        }
+
+        if(timer > 15)
+        {
+            infamyCount += upgrade1Count;
+            timer = 0;
+        }
+
         onClickTxt.text = ("On click: " + ((1 + clickMult) / (1 + (infamyCount / 10)))).ToString();
         infamyCountTxt.text = infamyCount.ToString();
     }
@@ -95,6 +182,10 @@ public class ClickerScript : MonoBehaviour
         {
             influenceCount -= upgrade2Cost;
             upgrade2E += 1;
+            upgrade2C += 1;
+            upgrade2L += 3;
+            cultistsCount += upgrade2C;
+            cultistsCountTxt.text = cultistsCount.ToString();  
             upgrade2Cost += (100 * (1 + (upgrade2E / 2)));
             countTxt.text = influenceCount.ToString();
             upgrade2Txt.text = ("Cost: " + upgrade2Cost + ", Upgrades: " + upgrade2E + ", Influence: " + upgrade2F + ", Infamy: " + upgrade2Infamy).ToString();
@@ -108,16 +199,22 @@ public class ClickerScript : MonoBehaviour
         upgrade2Infamy = 0;
         upgrade2Cost = 100;
         upgrade2E = 0;
+        upgrade2C = 0;
+        upgrade2L = 0;
         countTxt.text = influenceCount.ToString();
-        upgrade2Txt.text = ("Cost: " + upgrade2Cost + ", Upgrades: " + upgrade2E + ", Influence: " + upgrade2F + ", Infamy: " + upgrade2Infamy).ToString();
+        upgrade2Txt.text = ("Locked").ToString();
     }
 
-    public void onUpgrade3() // mind control
+    public void onUpgrade3() // social media
     {
         if (influenceCount >= upgrade3Cost)
         {
             influenceCount -= upgrade3Cost;
             upgrade3E += 1;
+            upgrade3C += 3;
+            upgrade3L += 1;
+            cultistsCount += upgrade3C;
+            cultistsCountTxt.text = cultistsCount.ToString();
             upgrade3Cost += (125 * (1 + (upgrade3E / 2)));
             countTxt.text = influenceCount.ToString();
             upgrade3Txt.text = ("Cost: " + upgrade3Cost + ", Upgrades: " + upgrade3E + ", Influence: " + upgrade3F + ", Infamy: " + upgrade3Infamy).ToString();
@@ -131,9 +228,99 @@ public class ClickerScript : MonoBehaviour
         upgrade3Infamy = 0;
         upgrade3Cost = 125;
         upgrade3E = 0;
+        upgrade3C = 0;
+        upgrade3L = 0;
         countTxt.text = influenceCount.ToString();
-        upgrade3Txt.text = ("Cost: " + upgrade3Cost + ", Upgrades: " + upgrade3E + ", Influence: " + upgrade3F + ", Infamy: " + upgrade3Infamy).ToString();
+        upgrade3Txt.text = ("Locked").ToString();
     }
+
+    public void onUpgrade4() // indoctronation
+    {
+        if (influenceCount >= upgrade4Cost)
+        {
+            influenceCount -= upgrade4Cost;
+            upgrade4E += 1;
+            upgrade4C += 2;
+            upgrade4L += 3;
+            cultistsCount += upgrade4C;
+            cultistsCountTxt.text = cultistsCount.ToString();
+            upgrade4Cost += (150 * (1 + (upgrade4E / 2)));
+            countTxt.text = influenceCount.ToString();
+            upgrade4Txt.text = ("Cost: " + upgrade4Cost + ", Upgrades: " + upgrade4E + ", Influence: " + upgrade4F + ", Infamy: " + upgrade4Infamy).ToString();
+        }
+    }
+    public void onUpgrade4Sac()
+    {
+        infamyCount -= upgrade4Infamy;
+        influenceCount += upgrade4F;
+        upgrade4F = 0;
+        upgrade4Infamy = 0;
+        upgrade4Cost = 150;
+        upgrade4E = 0;
+        upgrade4C = 0;
+        upgrade4L = 0;
+        countTxt.text = influenceCount.ToString();
+        upgrade4Txt.text = ("Locked").ToString();
+    }
+
+    public void onUpgrade5() // leaflets
+    {
+        if (influenceCount >= upgrade5Cost)
+        {
+            influenceCount -= upgrade5Cost;
+            upgrade5E += 1;
+            upgrade5C += 2;
+            upgrade5L += 2;
+            cultistsCount += upgrade5C;
+            cultistsCountTxt.text = cultistsCount.ToString();
+            upgrade5Cost += (175 * (1 + (upgrade5E / 2)));
+            countTxt.text = influenceCount.ToString();
+            upgrade5Txt.text = ("Cost: " + upgrade5Cost + ", Upgrades: " + upgrade5E + ", Influence: " + upgrade5F + ", Infamy: " + upgrade5Infamy).ToString();
+        }
+    }
+    public void onUpgrade5Sac()
+    {
+        infamyCount -= upgrade5Infamy;
+        influenceCount += upgrade5F;
+        upgrade5F = 0;
+        upgrade5Infamy = 0;
+        upgrade5Cost = 175;
+        upgrade5E = 0;
+        upgrade5C = 0;
+        upgrade5L = 0;
+        countTxt.text = influenceCount.ToString();
+        upgrade5Txt.text = ("Locked").ToString();
+    }
+
+    public void onUpgrade6() // kidnapping
+    {
+        if (influenceCount >= upgrade6Cost)
+        {
+            influenceCount -= upgrade6Cost;
+            upgrade6E += 1;
+            upgrade6C += 2;
+            upgrade6L += 1;
+            cultistsCount += upgrade6C;
+            cultistsCountTxt.text = cultistsCount.ToString();
+            upgrade6Cost += (200 * (1 + (upgrade6E / 2)));
+            countTxt.text = influenceCount.ToString();
+            upgrade6Txt.text = ("Cost: " + upgrade6Cost + ", Upgrades: " + upgrade6E + ", Influence: " + upgrade6F + ", Infamy: " + upgrade6Infamy).ToString();
+        }
+    }
+    public void onUpgrade6Sac()
+    {
+        infamyCount -= upgrade6Infamy;
+        influenceCount += upgrade6F;
+        upgrade6F = 0;
+        upgrade6Infamy = 0;
+        upgrade6Cost = 200;
+        upgrade6E = 0;
+        upgrade6C = 0;
+        upgrade6L = 0;
+        countTxt.text = influenceCount.ToString();
+        upgrade6Txt.text = ("Locked").ToString();
+    }
+
     public void onClick()
     {
         if (upgrade1Count != 0)
