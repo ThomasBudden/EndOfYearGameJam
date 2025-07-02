@@ -15,10 +15,15 @@ public class TurnCounter : MonoBehaviour
     [SerializeField] private Image playerHealthBar;
     [SerializeField] private Image enemyHealthBar;
 
+    [SerializeField] private GameObject currency;
+
     private int enemyNo;
 
     public bool pTurn;
     public bool eTurn;
+
+    private bool win;
+    private bool lose;
 
     public TMP_Text battleText;
     public TMP_Text turnText;
@@ -43,6 +48,7 @@ public class TurnCounter : MonoBehaviour
         if (player.GetComponent<Player>().playerCurrentHealth <= 0 )
         {
             playerDead = true;
+            lose = true;
             backToGame.SetActive(true);
             pTurn = false;
             eTurn = false;
@@ -50,6 +56,7 @@ public class TurnCounter : MonoBehaviour
         if (enemy.GetComponent<Enemy>().enemyCurrentHealth <= 0)
         {
             enemyDead = true;
+            win = true;
             backToGame.SetActive(true);
             pTurn = false;
             eTurn = false;
@@ -123,5 +130,39 @@ public class TurnCounter : MonoBehaviour
     {
         Destroy(player);
         Destroy(enemy);
+    }
+
+    public void LoseBattle()
+    {
+        if(lose == true)
+        {
+            currency.GetComponent<ClickerScript>().influenceCount -= 100;
+            if(currency.GetComponent<ClickerScript>().influenceCount <= 0)
+            {
+                currency.GetComponent<ClickerScript>().influenceCount = 0;
+            }
+            currency.GetComponent<ClickerScript>().cultistsCount -= 5;
+            if(currency.GetComponent<ClickerScript>().cultistsCount <= 0)
+            {
+                currency.GetComponent<ClickerScript>().cultistsCount = 0;
+            }
+            lose = false;
+        }
+    }
+
+    public void WinBattle()
+    {
+        if (win == true)
+        {
+            currency.GetComponent<ClickerScript>().influenceCount += 200;
+            currency.GetComponent<ClickerScript>().infamyCount -= 20;
+            if(currency.GetComponent<ClickerScript>().infamyCount <= 0)
+            {
+                currency.GetComponent<ClickerScript>().infamyCount = 0;
+            }
+            currency.GetComponent<ClickerScript>().cultistsCount += 10;
+            currency.GetComponent<ClickerScript>().battlesWon++;
+            win = false;
+        }
     }
 }
