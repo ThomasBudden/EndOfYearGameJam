@@ -12,6 +12,8 @@ public class Enemy : MonoBehaviour
     public float enemyCurrentHealth;
     [SerializeField] private float enemyMaxHealth;
 
+    private Animator anim;
+
     public bool enemyDefended;
 
     private int moveRoll;
@@ -50,6 +52,7 @@ public class Enemy : MonoBehaviour
         enemyCurrentHealth = enemyMaxHealth;
         player = GameObject.Find("Player(Clone)");
         turnCounter = GameObject.Find("TurnBasedBattle");
+        anim = this.GetComponentInChildren<Animator>();
     }
 
     void Update()
@@ -150,6 +153,7 @@ public class Enemy : MonoBehaviour
     void Attack()
     {
         dodgeRoll = Random.Range(0, dodgeMax);
+        anim.SetBool("attack", true);
 
         if (dodgeRoll == 1)
         {
@@ -202,6 +206,7 @@ public class Enemy : MonoBehaviour
     void Special()
     {
         dodgeRoll = Random.Range(0, dodgeMax);
+        anim.SetBool("attack", true);
 
         if (dodgeRoll == 1)
         {
@@ -256,6 +261,7 @@ public class Enemy : MonoBehaviour
     {
         paralysisRoll = Random.Range(0, paralysisMax);
         dodgeRoll = Random.Range(0, dodgeMax);
+        anim.SetBool("attack", true);
 
         if (dodgeRoll == 1)
         {
@@ -304,6 +310,7 @@ public class Enemy : MonoBehaviour
     {
         poisonRoll = Random.Range(0, poisonMax);
         dodgeRoll = Random.Range(0, dodgeMax);
+        anim.SetBool("attack", true);
 
         if (dodgeRoll == 0)
         {
@@ -370,6 +377,7 @@ public class Enemy : MonoBehaviour
         player.GetComponent<Player>().playerDefended = false;
         player.GetComponent<Player>().attacked = false;
         player.GetComponent<Player>().takePoisonDamage = true;
+        anim.SetBool("attack", false);
     }
 
     void EndParalysis()

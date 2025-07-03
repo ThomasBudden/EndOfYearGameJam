@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public GameObject enemy;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject attacks;
+    [SerializeField] private GameObject desc;
 
     public float playerCurrentHealth;
     [SerializeField] private float playerMaxHealth;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
     public int playerPoisonTurnCounter;
 
     public bool attacked;
+    private Animator anim;
 
     void Start()
     {
@@ -42,8 +44,10 @@ public class Player : MonoBehaviour
         enemy = GameObject.Find("Enemy(Clone)");
         playerTurnCounter = GameObject.Find("TurnBasedBattle");
         attacks = GameObject.Find("MoveButtons");
+        desc = GameObject.Find("MoveDescriptionBox");
         attacks.GetComponentInChildren<AttackButtons>().player = this.gameObject;
         attacks.GetComponentInChildren<AttackButtons>().assigned = false;
+        anim = GetComponentInChildren<Animator>();
     }
 
     void Update()
@@ -53,6 +57,7 @@ public class Player : MonoBehaviour
         if (playerTurnCounter.gameObject.GetComponent<TurnCounter>().pTurn == true)
         {
             attacks.SetActive(true);
+            desc.SetActive(true);
 
             if (playerPoison == true && takePoisonDamage == true)
             {
@@ -94,6 +99,7 @@ public class Player : MonoBehaviour
     public void Attack()
     {
         dodgeRoll = Random.Range(0, 5);
+        anim.SetBool("attack", true);
 
         if (dodgeRoll == 3)
         {
@@ -158,6 +164,7 @@ public class Player : MonoBehaviour
     public void Special()
     {
         dodgeRoll = Random.Range(0, 5);
+        anim.SetBool("attack", true);
 
         if (dodgeRoll == 3)
         {
@@ -215,6 +222,7 @@ public class Player : MonoBehaviour
     {
         poisonRoll = Random.Range(0, 5);
         dodgeRoll = Random.Range(0, 5);
+        anim.SetBool("attack", true);
 
         if (dodgeRoll == 3)
         {
@@ -268,6 +276,7 @@ public class Player : MonoBehaviour
     {
         dodgeRoll = Random.Range(0, 5);
         paralysisRoll = Random.Range(0, 4);
+        anim.SetBool("attack", true);
 
         if (dodgeRoll == 3)
         {
@@ -351,5 +360,6 @@ public class Player : MonoBehaviour
         playerTurnCounter.gameObject.GetComponent<TurnCounter>().pTurn = false;
         playerTurnCounter.gameObject.GetComponent<TurnCounter>().eTurn = true;
         attacks.SetActive(false);
+        anim.SetBool("attack", false);
     }
 }

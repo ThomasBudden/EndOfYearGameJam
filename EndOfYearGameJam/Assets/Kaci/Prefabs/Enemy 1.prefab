@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8851510702643837444}
   - component: {fileID: 7163312912322747661}
   m_Layer: 5
-  m_Name: Enemy
+  m_Name: Enemy 1
   m_TagString: Untagged
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -65,16 +65,16 @@ MonoBehaviour:
   enemyHealthBar: {fileID: 0}
   enemyPoisonedText: {fileID: 3009105983044734442}
   enemyParalysedText: {fileID: 8018899954350618983}
-  damage: 15
-  specialDamage: 35
-  specialChance: 4
-  dodgeMax: 5
-  backfireMax: 4
+  damage: 20
+  specialDamage: 40
+  specialChance: 5
+  dodgeMax: 4
+  backfireMax: 5
   paralysisMax: 3
-  poisonMax: 3
+  poisonMax: 2
   canPoison: 1
-  canParalysis: 1
-  poisonWeakness: 5
+  canParalysis: 0
+  poisonWeakness: 4
   paralysisWeakness: 3
   enemyInfo: An enemy of the cult. Destroy them.
 --- !u!1 &3009105983044734442
@@ -389,7 +389,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: 84cc86750365dff4a88a426443bc8179, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0beb336a3781f5649967186ee5f92deb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -410,7 +410,7 @@ Animator:
   m_GameObject: {fileID: 4791899351266352295}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 27a9373f10c751d42a5a92376d908e4c, type: 2}
+  m_Controller: {fileID: 9100000, guid: a01298a54ae3a7844a428b67f700fac2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
