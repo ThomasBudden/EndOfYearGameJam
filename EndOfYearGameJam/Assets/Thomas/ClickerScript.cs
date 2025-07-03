@@ -23,6 +23,7 @@ public class ClickerScript : MonoBehaviour
     public TMP_Text onClickTxt;
 
     private float timer;
+    private int testFloat;
     [SerializeField] private float saveTimer;
     [SerializeField] private GameObject saveInd;
 
@@ -114,6 +115,17 @@ public class ClickerScript : MonoBehaviour
         saveTimer += Time.deltaTime;
         timer += Time.deltaTime;
 
+        if ( timer >= 15 )
+        {
+            timer = 0;
+            testFloat = Random.Range(0, 5);
+
+            if( testFloat == 3)
+            {
+                infamyCount += upgrade1Count;
+            }
+        }
+
         if (upgrade2Time + 10 < Time.time && upgrade2E > 0) //mind control
         {
             upgrade2Time = Time.time;
@@ -169,19 +181,13 @@ public class ClickerScript : MonoBehaviour
             upgrade6Txt.text = ("Cost: " + upgrade6Cost + ", Upgrades: " + upgrade6E + ", Influence: " + upgrade6F + ", Infamy: " + upgrade6Infamy).ToString();
         }
 
-        if(timer > 15)
-        {
-            infamyCount += upgrade1Count;
-            timer = 0;
-        }
-
         if(saveTimer >= 30)
         {
             SaveGame();
             saveTimer = 0;
         }
 
-        onClickTxt.text = ("On click: " + ((1 + clickMult) / (1 + (infamyCount / 10)))).ToString();
+        onClickTxt.text = ("On click: " + ((1 + clickMult) / (1 + (infamyCount / 50)))).ToString();
         infamyCountTxt.text = infamyCount.ToString();
 
         if(influenceCount >= 1000 || winGame == true)

@@ -62,7 +62,6 @@ public class Enemy : MonoBehaviour
         if (turnCounter.gameObject.GetComponent<TurnCounter>().eTurn == true && turnCounter.GetComponent<TurnCounter>().enemyDead == false)
         {
             turnCounter.gameObject.GetComponent<TurnCounter>().eTurn = false;
-            Invoke("RevertPlayer", 1);
             Invoke("PoisonCheck", 2);
             Invoke("Action", 2);
             Invoke("EndOfTurn", 5);
@@ -359,6 +358,8 @@ public class Enemy : MonoBehaviour
 
     void PoisonCheck()
     {
+        RevertPlayer();
+
         if (enemyPoison == true)
         {
             turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy is poisoned. It takes 10 damage";
