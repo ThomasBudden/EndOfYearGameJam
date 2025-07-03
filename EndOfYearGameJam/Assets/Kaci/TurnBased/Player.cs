@@ -34,14 +34,14 @@ public class Player : MonoBehaviour
     public int playerPoisonTurnCounter;
 
     public bool attacked;
-    private Animator anim;
+    public Animator anim;
 
     void Start()
     {
         playerCurrentHealth = playerMaxHealth;
         player = this.gameObject;
         
-        enemy = GameObject.Find("Enemy(Clone)");
+        enemy = GameObject.FindGameObjectWithTag("Enemy");
         playerTurnCounter = GameObject.Find("TurnBasedBattle");
         attacks = GameObject.Find("MoveButtons");
         desc = GameObject.Find("MoveDescriptionBox");
@@ -360,6 +360,6 @@ public class Player : MonoBehaviour
         playerTurnCounter.gameObject.GetComponent<TurnCounter>().pTurn = false;
         playerTurnCounter.gameObject.GetComponent<TurnCounter>().eTurn = true;
         attacks.SetActive(false);
-        anim.SetBool("attack", false);
+        desc.SetActive(false); 
     }
 }

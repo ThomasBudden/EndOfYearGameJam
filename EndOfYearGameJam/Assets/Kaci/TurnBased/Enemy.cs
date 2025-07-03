@@ -62,6 +62,7 @@ public class Enemy : MonoBehaviour
         if (turnCounter.gameObject.GetComponent<TurnCounter>().eTurn == true && turnCounter.GetComponent<TurnCounter>().enemyDead == false)
         {
             turnCounter.gameObject.GetComponent<TurnCounter>().eTurn = false;
+            Invoke("RevertPlayer", 1);
             Invoke("PoisonCheck", 2);
             Invoke("Action", 2);
             Invoke("EndOfTurn", 5);
@@ -392,6 +393,11 @@ public class Enemy : MonoBehaviour
         turnCounter.gameObject.GetComponent<TurnCounter>().battleText.text = "Enemy is no longer poisoned";
         enemyPoison = false;
         enemyParalysedText.SetActive(false);
+    }
+
+    void RevertPlayer()
+    {
+        player.GetComponent<Player>().anim.SetBool("attack", false);
     }
 
 }
